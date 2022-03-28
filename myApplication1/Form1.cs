@@ -8,11 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Threading;
 
 namespace myApplication1
 {
     public partial class MainForm : Form
     {
+        static string[] DelStr = new string[] { "a", "bb", "cccc" };
         public MainForm()
         {
             InitializeComponent();
@@ -23,7 +25,7 @@ namespace myApplication1
         /// <param name="strPath">文件夹路径</param>
         /// <returns>执行结果</returns>
 
-        public static void DeleteDir(string file)
+        public static void DeleteDir(string file,int iDelFlag)
         {
             try
             {
@@ -44,14 +46,21 @@ namespace myApplication1
 
                         if (File.Exists(f))
                         {
+                            Thread.Sleep(2);
                             //如果有子文件删除文件
-                            File.Delete(f);
-                            Console.WriteLine(f);
+                            if(iDelFlag==1)
+                                File.Delete(f);
+                            //Console.WriteLine(f);
                         }
                         else
                         {
-                            //循环递归删除子文件夹
-                            DeleteDir(f);
+                            for (int i = 0; i < DelStr.GetLength(0);i++)
+                                if (f.IndexOf(DelStr[i]) != -1)
+                                {
+                                     //循环递归删除子文件夹
+                                    DeleteDir(f,1);
+                                    //Console.WriteLine("字符串中含有@，其出现的位置是{0}", str.IndexOf("@") + 1);
+                                }
                         }
                     }
                     //删除空文件夹
@@ -69,7 +78,8 @@ namespace myApplication1
 
         private void btn_del_Click(object sender, EventArgs e)
         {
-            DeleteDir(@"D:\zhidiangit3.0");
+            //textBox1.Text.ToString();
+            DeleteDir(textBox1.Text.ToString(),0);
         }
 
         private void MainForm_DragEnter(object sender, DragEventArgs e)
